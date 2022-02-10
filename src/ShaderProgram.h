@@ -4,6 +4,15 @@
 
 #include <string>
 
+template<typename T>
+struct vec4
+{
+    T x;
+    T y;
+    T z;
+    T w;
+};
+
 class ShaderProgram
 {
 private:
@@ -15,6 +24,7 @@ public:
     ~ShaderProgram();
     void Bind() const;
     static void Unbind() ;
+    void setUniform4f(const char* name, vec4<float>) const;
 private:
     static std::string GetShaderSrcStringFromFile(const std::string &path);
     static void SetShaderSource(unsigned int shaderID,  const char* shaderSrcString);

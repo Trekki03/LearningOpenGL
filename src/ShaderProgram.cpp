@@ -6,9 +6,7 @@
 ShaderProgram::ShaderProgram(const char *vertexShaderPath, const char *fragmentShaderPath)
 {
     std::string vertexShaderSource = GetShaderSrcStringFromFile(vertexShaderPath);
-    std::cout << vertexShaderPath << ": " << std::endl << vertexShaderSource << std::endl;
     std::string fragmentShaderSource = GetShaderSrcStringFromFile(fragmentShaderPath);
-    std::cout << fragmentShaderPath << ": " << std::endl << fragmentShaderSource << std::endl;
 
     m_programID = glCreateProgram();
 
@@ -90,4 +88,16 @@ void ShaderProgram::Bind() const
 void ShaderProgram::Unbind()
 {
     glUseProgram(0);
+}
+
+void ShaderProgram::setUniform4f(const char* name, vec4<float> data) const
+{
+    int uniformLocation = glad_glGetUniformLocation(m_programID, name);
+    if(uniformLocation == -1)
+    {
+        std::cout << "Error while retrieving location of Uniform: " << name << std::endl;
+        return;
+    }
+    Bind();
+    glUniform4f(uniformLocation, data.x, data.y, data.z, data.w);
 }
