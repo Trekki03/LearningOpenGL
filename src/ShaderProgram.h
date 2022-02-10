@@ -2,6 +2,7 @@
 #ifndef LEARNOPENGL_SHADERPROGRAM_H
 #define LEARNOPENGL_SHADERPROGRAM_H
 
+#include <string>
 
 class ShaderProgram
 {
@@ -15,7 +16,7 @@ public:
     void Bind() const;
     static void Unbind() ;
 private:
-    static const char* GetShaderSrcStringFromFile(const char* path);
+    static std::string GetShaderSrcStringFromFile(const std::string &path);
     static void SetShaderSource(unsigned int shaderID,  const char* shaderSrcString);
     void CompileShader(unsigned int shaderID);
     void AttachShader(unsigned int shaderID) const;

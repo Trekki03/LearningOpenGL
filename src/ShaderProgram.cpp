@@ -5,18 +5,20 @@
 
 ShaderProgram::ShaderProgram(const char *vertexShaderPath, const char *fragmentShaderPath)
 {
-    const char* vertexShaderSource = GetShaderSrcStringFromFile(vertexShaderPath);
-    const char* fragmentShaderSource = GetShaderSrcStringFromFile(fragmentShaderPath);
+    std::string vertexShaderSource = GetShaderSrcStringFromFile(vertexShaderPath);
+    std::cout << vertexShaderPath << ": " << std::endl << vertexShaderSource << std::endl;
+    std::string fragmentShaderSource = GetShaderSrcStringFromFile(fragmentShaderPath);
+    std::cout << fragmentShaderPath << ": " << std::endl << fragmentShaderSource << std::endl;
 
     m_programID = glCreateProgram();
 
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    SetShaderSource(vertexShader, vertexShaderSource);
+    SetShaderSource(vertexShader, vertexShaderSource.c_str());
     CompileShader(vertexShader);
     AttachShader(vertexShader);
 
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    SetShaderSource(fragmentShader, fragmentShaderSource);
+    SetShaderSource(fragmentShader, fragmentShaderSource.c_str());
     CompileShader(fragmentShader);
     AttachShader(fragmentShader);
 
@@ -32,7 +34,7 @@ ShaderProgram::~ShaderProgram()
     glDeleteShader(m_programID);
 }
 
-const char* ShaderProgram::GetShaderSrcStringFromFile(const char *path)
+std::string ShaderProgram::GetShaderSrcStringFromFile(const std::string &path)
 {
     std::ifstream stream(path);
     std::string line, sourceCode;
@@ -41,8 +43,7 @@ const char* ShaderProgram::GetShaderSrcStringFromFile(const char *path)
     {
         sourceCode += (line + "\n");
     }
-    const char* output = sourceCode.c_str();
-    return output;
+    return sourceCode;
 }
 
 void ShaderProgram::SetShaderSource(unsigned int shaderID, const char* shaderSrcString)
