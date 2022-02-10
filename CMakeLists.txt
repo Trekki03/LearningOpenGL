@@ -1,8 +1,18 @@
 cmake_minimum_required(VERSION 3.21)
 set(CMAKE_CXX_STANDARD 23)
-
 #create Project
 project(learnOpenGL)
+
+#add source files
+add_executable(
+        learnOpenGL
+        src/main.cpp
+        dependencies/glad/src/glad.c # --> Glad-lib src file
+        src/VertexBuffer.cpp
+        src/VertexBuffer.h
+        src/IndexBuffer.cpp
+        src/IndexBuffer.h src/VertexArrayObject.cpp src/VertexArrayObject.h src/window_processing.cpp src/window_processing.h src/ShaderProgram.cpp src/ShaderProgram.h)
+
 
 #add custom target for copying resource files to binary folder
 add_custom_target(
@@ -10,63 +20,29 @@ add_custom_target(
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/res
         ${CMAKE_BINARY_DIR}/res
-        )
-
+)
 add_dependencies(${PROJECT_NAME} copy-files)
 
-#add source files
-add_executable(learnOpenGL main.cpp)
+find_package(OpenGL REQUIRED)
+include_directories(
+        ${OPENGL_INCLUDE_DIRS}
+        "${CMAKE_SOURCE_DIR}/dependencies/glfw/include"
+        "${CMAKE_SOURCE_DIR}/dependencies/glad/include"
+)
+target_link_libraries(
+        ${CMAKE_PROJECT_NAME}
+        ${OPENGL_LIBRARIES}
 
-#add c++ macro definitions
-add_definitions()
-
-
-#find and link libraries to executable
-#for windows
-if(WIN32)
-    
-    #find lib
-    find_package(OpenGL REQUIRED)
-    
-    #includes
-    include_directories(
-            "${CMAKE_SOURCE_DIR}\\Dependencies\\GLFW\\include"
-            "${CMAKE_SOURCE_DIR}\\Dependencies\\glew-2.1.0\\include"
-            ${OPENGL_INCLUDE_DIRS}
-    )
-
-    #libs
-    target_link_libraries(
-            ${CMAKE_PROJECT_NAME}
-            "${CMAKE_SOURCE_DIR}\\Dependencies\\GLFW\\lib-mingw-w64\\libglfw3.a"
-            "${CMAKE_SOURCE_DIR}\\Dependencies\\glew-2.1.0\\lib\\Release\\x64\\glew32s.lib"
-            ${OPENGL_LIBRARIES}
-    )
-endif()
+        "${CMAKE_SOURCE_DIR}/dependencies/glfw/lib/libglfw3.a"
+)
 
 #for mac
 if(APPLE)
-
-    #find lib
-    find_package(OpenGL REQUIRED)
     find_library(COCOA_LIBRARY Cocoa)
     find_library(IOKIT_LIBRARY IOKit)
-
-    #includes
-    include_directories(
-            "${CMAKE_SOURCE_DIR}/Dependencies/GLFW-Mac/include"
-            "${CMAKE_SOURCE_DIR}/Dependencies/glew-2.1.0-Mac/include"
-            ${OPENGL_INCLUDE_DIRS}
-
-    )
-
-    #libs
     target_link_libraries(
             ${CMAKE_PROJECT_NAME}
-            "${CMAKE_SOURCE_DIR}/Dependencies/GLFW-Mac/lib-arm64/libglfw3.a"
-            "${CMAKE_SOURCE_DIR}/Dependencies/glew-2.1.0-Mac/lib/libGLEW.a"
             ${COCOA_LIBRARY}
-            ${OPENGL_LIBRARIES}
             ${IOKIT_LIBRARY}
     )
 endif()
