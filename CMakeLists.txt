@@ -23,6 +23,7 @@ add_custom_target(
 )
 add_dependencies(${PROJECT_NAME} copy-files)
 
+#find and add libraries
 find_package(OpenGL REQUIRED)
 include_directories(
         ${OPENGL_INCLUDE_DIRS}
@@ -36,7 +37,7 @@ target_link_libraries(
         "${CMAKE_SOURCE_DIR}/dependencies/glfw/lib/libglfw3.a"
 )
 
-#for mac
+#add mac specific libraries
 if(APPLE)
     find_library(COCOA_LIBRARY Cocoa)
     find_library(IOKIT_LIBRARY IOKit)
