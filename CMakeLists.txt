@@ -29,6 +29,7 @@ include_directories(
         ${OPENGL_INCLUDE_DIRS}
         "${CMAKE_SOURCE_DIR}/dependencies/glfw/include"
         "${CMAKE_SOURCE_DIR}/dependencies/glad/include"
+        "${CMAKE_SOURCE_DIR}/dependencies/stb/include"
 )
 target_link_libraries(
         ${CMAKE_PROJECT_NAME}

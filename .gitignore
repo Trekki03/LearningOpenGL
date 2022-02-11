@@ -2,7 +2,9 @@
 /cmake-build-release/
 /dependencies/glad/*
 /dependencies/glfw/*
+/dependencies/stb/*
 !dependencies/glad/info.txt
 !dependencies/gfw/info.txt
+!dependencies/stb/info.txt
 **/.DS_STORE
 /.idea/

@@ -6,7 +6,10 @@
 #include "VertexArrayObject.h"
 #include "window_processing.h"
 #include "ShaderProgram.h"
-#include <math.h>
+#include <cmath>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 int main()
 {
@@ -37,38 +40,61 @@ int main()
     }
 
     float vertices[] = {
-             0.5f,    0.5f,   0.0f,  1.0f, 0.0f, 0.0f, 1.0f, //top right
-             0.5f,   -0.5f,   0.0f,  0.0f, 1.0f, 0.0f, 1.0f, //bottom right
-            -0.5f,   -0.5f,   0.0f,  0.0f, 0.0f, 1.0f, 1.0f, //bottom left
-            -0.5f,    0.5f,   0.0f,  1.0f, 0.0f, 0.0f, 1.0f  //top left
+             0.5f,    0.5f,   0.0f,  1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, //top right
+             0.5f,   -0.5f,   0.0f,  0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, //bottom right
+            -0.5f,   -0.5f,   0.0f,  0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, //bottom left
+            -0.5f,    0.5f,   0.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f  //top left
     };
 
-    unsigned int indicesRed[] = {
-            0, 1, 3
-    };
-    unsigned int indicesBlue[] = {
+    unsigned int indices[] = {
+            0, 1, 3,
             1, 2, 3
     };
 
 
+
     VertexBuffer vb(vertices, sizeof(vertices), GL_STATIC_DRAW);
-    IndexBuffer ibRed(indicesRed, sizeof(indicesRed), GL_STATIC_DRAW);
-    IndexBuffer ibBlue(indicesBlue, sizeof(indicesBlue), GL_STATIC_DRAW);
+    IndexBuffer ib(indices, sizeof(indices), GL_STATIC_DRAW);
 
-    VertexArrayObject vaoRed;
-    vaoRed.AddIndexBuffer(ibRed);
-    vaoRed.SetVertexAttribPointer(vb, 0, 3, GL_FLOAT, false, 7*sizeof(float), nullptr);
-    vaoRed.EnableVertexAttribPointer(0);
+    VertexArrayObject vao;
+    vao.AddIndexBuffer(ib);
+    vao.SetVertexAttribPointer(vb, 0, 3, GL_FLOAT, false, 9 * sizeof(float), nullptr);
+    vao.SetVertexAttribPointer(vb, 1, 4, GL_FLOAT, false, 9 * sizeof(float), (void*) (3 * sizeof(float)));
+    vao.SetVertexAttribPointer(vb, 2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) (7 * sizeof(float)));
+    vao.EnableVertexAttribPointer(0);
+    vao.EnableVertexAttribPointer(1);
+    vao.EnableVertexAttribPointer(2);
 
-    VertexArrayObject vaoBlue;
-    vaoBlue.AddIndexBuffer(ibBlue);
-    vaoBlue.SetVertexAttribPointer(vb, 0, 3, GL_FLOAT, false, 7*sizeof(float), nullptr);
-    vaoBlue.SetVertexAttribPointer(vb, 1, 4, GL_FLOAT, false, 7*sizeof(float), (void*) (3 * sizeof(float)));
-    vaoBlue.EnableVertexAttribPointer(0);
-    vaoBlue.EnableVertexAttribPointer(1);
+    ShaderProgram basicShader("res/shader/basic.vert", "res/shader/basic.frag");
 
-    ShaderProgram basicRedShader("res/shader/basic.vert", "res/shader/red.frag");
-    ShaderProgram basicBlueShader("res/shader/basic.vert", "res/shader/blue.frag");
+    //Texture
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_set_flip_vertically_on_load(true);
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("res/textures/test.png", &width, &height, &nrChannels, 0);
+
+    if(data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Error reading Texture Image" << std::endl;
+    }
+
+    stbi_image_free(data);
+
+
+
 
     while(!glfwWindowShouldClose(window))
     {
@@ -77,16 +103,11 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        float timeValue = (float) glfwGetTime();
-        float greenValue = (sin(timeValue)/2.0f) + 0.5f;
 
-        vaoRed.Bind();
-        basicRedShader.setUniform4f("ourColor", {0.0f, greenValue, 0.0f, 1.0f});
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
-
-        vaoBlue.Bind();
-        basicBlueShader.Bind();
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        vao.Bind();
+        basicShader.Bind();
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
 
         glfwSwapBuffers(window);
