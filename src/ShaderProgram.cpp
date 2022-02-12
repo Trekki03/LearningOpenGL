@@ -90,7 +90,7 @@ void ShaderProgram::Unbind()
     glUseProgram(0);
 }
 
-void ShaderProgram::setUniform4f(const char* name, vec4<float> data) const
+void ShaderProgram::SetUniform4f(const char* name, vec4<float> data) const
 {
     int uniformLocation = glad_glGetUniformLocation(m_programID, name);
     if(uniformLocation == -1)
@@ -102,7 +102,7 @@ void ShaderProgram::setUniform4f(const char* name, vec4<float> data) const
     glUniform4f(uniformLocation, data.x, data.y, data.z, data.w);
 }
 
-void ShaderProgram::setUniform1i(const char* name, int data) const
+void ShaderProgram::SetUniform1i(const char* name, int data) const
 {
     Bind();
     int uniformLocation = glad_glGetUniformLocation(m_programID, name);
@@ -112,4 +112,15 @@ void ShaderProgram::setUniform1i(const char* name, int data) const
         return;
     }
     glUniform1i(uniformLocation, data);
+}
+
+void ShaderProgram::AddTexture(int slot, const Texture2D& texture)
+{
+    glActiveTexture(GL_TEXTURE0 + slot);
+    glBindTexture(GL_TEXTURE_2D, texture.GetTextureID());
+}
+
+void ShaderProgram::LinkTextureSlotToUniform(const char* name, int slot) const
+{
+    SetUniform1i(name, slot);
 }

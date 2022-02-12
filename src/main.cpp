@@ -6,10 +6,7 @@
 #include "VertexArrayObject.h"
 #include "window_processing.h"
 #include "ShaderProgram.h"
-#include <cmath>
-
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#include "Texture2D.h"
 
 int main()
 {
@@ -65,68 +62,15 @@ int main()
 
     ShaderProgram basicShader("res/shader/basic.vert", "res/shader/basic.frag");
 
-    //Texture box
-    unsigned int box;
-    glGenTextures(1, &box);
-    glBindTexture(GL_TEXTURE_2D, box);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    stbi_set_flip_vertically_on_load(true);
-    int width, height, nrChannels;
-    unsigned char *data = stbi_load("res/textures/box.jpg", &width, &height, &nrChannels, 0);
-
-    if(data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Error reading Texture Image (box)" << std::endl;
-    }
-
-    stbi_image_free(data);
+    Texture2D boxTexture("res/textures/box.jpg", GL_RGB, GL_RGB, GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, true);
+    Texture2D logoTexture("res/textures/logo.png", GL_RGBA, GL_RGB, GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, true);
 
 
-
-    //Texture Logo
-    unsigned int logo;
-    glGenTextures(1, &logo);
-    glBindTexture(GL_TEXTURE_2D, logo);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    stbi_set_flip_vertically_on_load(true);
-    //width, height, nrChannels already existing
-    //data already existing
-    data = stbi_load("res/textures/logo.png", &width, &height, &nrChannels, 0);
-
-    if(data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Error reading Texture Image (logo)" << std::endl;
-    }
-
-    stbi_image_free(data);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, box);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, logo);
-
-    basicShader.setUniform1i("tex1", 0);
-    basicShader.setUniform1i("tex2", 1);
+    ShaderProgram::AddTexture(0, boxTexture);
+    ShaderProgram::AddTexture(1, logoTexture);
+    basicShader.LinkTextureSlotToUniform("tex1", 0);
+    basicShader.LinkTextureSlotToUniform("tex2", 1);
 
     while(!glfwWindowShouldClose(window))
     {
