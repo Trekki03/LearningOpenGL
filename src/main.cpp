@@ -59,18 +59,16 @@ int main()
     VertexArrayObject vao;
     vao.AddIndexBuffer(ib);
     vao.SetVertexAttribPointer(vb, 0, 3, GL_FLOAT, false, 9 * sizeof(float), nullptr);
-    vao.SetVertexAttribPointer(vb, 1, 4, GL_FLOAT, false, 9 * sizeof(float), (void*) (3 * sizeof(float)));
-    vao.SetVertexAttribPointer(vb, 2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) (7 * sizeof(float)));
+    vao.SetVertexAttribPointer(vb, 1, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) (7 * sizeof(float)));
     vao.EnableVertexAttribPointer(0);
     vao.EnableVertexAttribPointer(1);
-    vao.EnableVertexAttribPointer(2);
 
     ShaderProgram basicShader("res/shader/basic.vert", "res/shader/basic.frag");
 
-    //Texture
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    //Texture box
+    unsigned int box;
+    glGenTextures(1, &box);
+    glBindTexture(GL_TEXTURE_2D, box);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -79,7 +77,36 @@ int main()
 
     stbi_set_flip_vertically_on_load(true);
     int width, height, nrChannels;
-    unsigned char *data = stbi_load("res/textures/test.png", &width, &height, &nrChannels, 0);
+    unsigned char *data = stbi_load("res/textures/box.jpg", &width, &height, &nrChannels, 0);
+
+    if(data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Error reading Texture Image (box)" << std::endl;
+    }
+
+    stbi_image_free(data);
+
+
+
+    //Texture Logo
+    unsigned int logo;
+    glGenTextures(1, &logo);
+    glBindTexture(GL_TEXTURE_2D, logo);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_set_flip_vertically_on_load(true);
+    //width, height, nrChannels already existing
+    //data already existing
+    data = stbi_load("res/textures/logo.png", &width, &height, &nrChannels, 0);
 
     if(data)
     {
@@ -88,13 +115,18 @@ int main()
     }
     else
     {
-        std::cout << "Error reading Texture Image" << std::endl;
+        std::cout << "Error reading Texture Image (logo)" << std::endl;
     }
 
     stbi_image_free(data);
 
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, box);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, logo);
 
-
+    basicShader.setUniform1i("tex1", 0);
+    basicShader.setUniform1i("tex2", 1);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -103,8 +135,6 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-
-        glBindTexture(GL_TEXTURE_2D, texture);
         vao.Bind();
         basicShader.Bind();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);

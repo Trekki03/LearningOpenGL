@@ -24,7 +24,8 @@ public:
     ~ShaderProgram();
     void Bind() const;
     static void Unbind() ;
-    void setUniform4f(const char* name, vec4<float>) const;
+    void setUniform4f(const char* name, vec4<float> data) const;
+    void setUniform1i(const char* name, int data) const;
 private:
     static std::string GetShaderSrcStringFromFile(const std::string &path);
     static void SetShaderSource(unsigned int shaderID,  const char* shaderSrcString);

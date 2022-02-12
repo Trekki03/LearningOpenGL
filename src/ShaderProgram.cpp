@@ -101,3 +101,15 @@ void ShaderProgram::setUniform4f(const char* name, vec4<float> data) const
     Bind();
     glUniform4f(uniformLocation, data.x, data.y, data.z, data.w);
 }
+
+void ShaderProgram::setUniform1i(const char* name, int data) const
+{
+    Bind();
+    int uniformLocation = glad_glGetUniformLocation(m_programID, name);
+    if(uniformLocation == -1)
+    {
+        std::cout << "Error while retrieving location of Uniform: " << name << std::endl;
+        return;
+    }
+    glUniform1i(uniformLocation, data);
+}

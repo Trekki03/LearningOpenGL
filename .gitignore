@@ -6,5 +6,6 @@
 !dependencies/glad/info.txt
 !dependencies/gfw/info.txt
 !dependencies/stb/info.txt
+/res/textures/box.jpg
 **/.DS_STORE
 /.idea/
