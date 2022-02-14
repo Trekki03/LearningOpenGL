@@ -67,8 +67,8 @@ int main()
     Texture2D logoTexture("res/textures/logo.png", GL_RGBA, GL_RGB, GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, true);
 
 
-    ShaderProgram::AddTexture(0, boxTexture);
-    ShaderProgram::AddTexture(1, logoTexture);
+    boxTexture.SetTextureSlot(0);
+    logoTexture.SetTextureSlot(1);
     basicShader.LinkTextureSlotToUniform("tex1", 0);
     basicShader.LinkTextureSlotToUniform("tex2", 1);
 

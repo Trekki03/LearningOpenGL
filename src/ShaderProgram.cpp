@@ -114,12 +114,6 @@ void ShaderProgram::SetUniform1i(const char* name, int data) const
     glUniform1i(uniformLocation, data);
 }
 
-void ShaderProgram::AddTexture(int slot, const Texture2D& texture)
-{
-    glActiveTexture(GL_TEXTURE0 + slot);
-    glBindTexture(GL_TEXTURE_2D, texture.GetTextureID());
-}
-
 void ShaderProgram::LinkTextureSlotToUniform(const char* name, int slot) const
 {
     SetUniform1i(name, slot);

@@ -58,3 +58,9 @@ void Texture2D::Unbind() const
 {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+void Texture2D::SetTextureSlot(int slot)
+{
+    glActiveTexture(GL_TEXTURE0 + slot);
+    glBindTexture(GL_TEXTURE_2D, m_textureID);
+}

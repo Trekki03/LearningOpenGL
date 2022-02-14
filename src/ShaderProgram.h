@@ -30,8 +30,6 @@ public:
     static void Unbind() ;
     void SetUniform4f(const char* name, vec4<float> data) const;
     void SetUniform1i(const char* name, int data) const;
-
-    static void AddTexture(int slot, const Texture2D& texture);
     void LinkTextureSlotToUniform(const char* name, int slot) const;
 
 //private functions

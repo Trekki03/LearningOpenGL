@@ -18,6 +18,7 @@ public:
     unsigned int GetTextureID() const;
     void Bind() const;
     void Unbind() const;
+    void SetTextureSlot(int slot);
 };
 
 
