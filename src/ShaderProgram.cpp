@@ -92,7 +92,7 @@ void ShaderProgram::Unbind()
 
 void ShaderProgram::SetUniform4f(const char* name, vec4<float> data) const
 {
-    int uniformLocation = glad_glGetUniformLocation(m_programID, name);
+    int uniformLocation = glGetUniformLocation(m_programID, name);
     if(uniformLocation == -1)
     {
         std::cout << "Error while retrieving location of Uniform: " << name << std::endl;
@@ -105,13 +105,25 @@ void ShaderProgram::SetUniform4f(const char* name, vec4<float> data) const
 void ShaderProgram::SetUniform1i(const char* name, int data) const
 {
     Bind();
-    int uniformLocation = glad_glGetUniformLocation(m_programID, name);
+    int uniformLocation = glGetUniformLocation(m_programID, name);
     if(uniformLocation == -1)
     {
         std::cout << "Error while retrieving location of Uniform: " << name << std::endl;
         return;
     }
     glUniform1i(uniformLocation, data);
+}
+
+void ShaderProgram::SetUniformMatrix4fv(const char* name, int count, bool transpose, const float* data)
+{
+    Bind();
+    int uniformLocation = glGetUniformLocation(m_programID, name);
+    if(uniformLocation == -1)
+    {
+        std::cout << "Error while retrieving location of Uniform: " << name << std::endl;
+        return;
+    }
+    glUniformMatrix4fv(uniformLocation, count, transpose, data);
 }
 
 void ShaderProgram::LinkTextureSlotToUniform(const char* name, int slot) const
