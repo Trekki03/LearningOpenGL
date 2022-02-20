@@ -40,15 +40,70 @@ int main()
     }
 
     float vertices[] = {
-             0.5f,    0.5f,   0.0f,  1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, //top right
-             0.5f,   -0.5f,   0.0f,  0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, //bottom right
-            -0.5f,   -0.5f,   0.0f,  0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, //bottom left
-            -0.5f,    0.5f,   0.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f  //top left
+
+              //Front
+              -0.5f,   -0.5f,  0.5f,    0.0f,   0.0f,    // 0
+              0.5f,    -0.5f,  0.5f,    1.0f,   0.0f,    // 1
+              0.5f,   0.5f,  0.5f,   1.0f,  1.0f,   // 2
+              -0.5f,  0.5f,  0.5f,   0.0f,  1.0f,   // 3
+
+              //Right Side
+              0.5f,   -0.5f, 0.5f,   0.0f,  0.0f,   // 4
+              0.5,    -0.5f, -0.5f,  1.0f,  0.0f,   // 5
+              0.5f,   0.5f,  -0.5f,  1.0f,  1.0f,   // 6
+              0.5f,   0.5f,  0.5f,   0.0f,  1.0f,   // 7
+
+              //Back
+              0.5f,   -0.5f, -0.5f,  0.0f,  0.0f,   // 8
+              -0.5f,  -0.5f, -0.5f,  1.0f,  0.0f,   // 9
+              -0.5f,  0.5f,  -0.5f,  1.0f,  1.0f,   // 10
+              0.5f,   0.5f,  -0.5f,  0.0f,  1.0f,   // 11
+
+              //Left Side
+              -0.5f,  -0.5f, -0.5f,  0.0f,  0.0f,   // 12
+              -0.5f,  -0.5f, 0.5f,   1.0f,  0.0f,   // 13
+              -0.5f,  0.5f,  0.5f,   1.0f,  1.0f,   // 14
+              -0.5f,  0.5f,  -0.5f,  0.0f,  1.0f,   // 15
+
+              //Bottom
+              0.5f,   -0.5f, -0.5f,  1.0f,  0.0f,   // 16
+              -0.5f,  -0.5f, -0.5f,  0.0f,  0.0f,   // 17
+              -0.5f,  -0.5f, 0.5f,   0.0f,  1.0f,   // 18
+              0.5f,   -0.5f, 0.5f,   1.0f,  1.0f,   // 19
+
+              //Top
+              -0.5f, 0.5f, 0.5f,  0.0f, 0.0f,   // 20
+              0.5f,  0.5f, 0.5f,  1.0f, 0.0f,   // 21
+              0.5f,  0.5f, -0.5f, 1.0f, 1.0f,   // 22
+              -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,   // 23
     };
 
     unsigned int indices[] = {
-            0, 1, 3,
-            1, 2, 3
+
+            //Front
+            0,   1,   3,
+            1,   2,   3,
+
+            //Right Side
+            4,   5,   7,
+            5,   6,  7,
+
+            //Back
+            8,  9,  11,
+            9,  10, 11,
+
+            //Left Side
+            12, 13, 15,
+            13, 14, 15,
+
+            //Bottom
+            16, 17, 19,
+            17, 18, 19,
+
+            //Top
+            20, 21, 23,
+            21, 22, 23
+
     };
 
 
@@ -58,8 +113,8 @@ int main()
 
     VertexArrayObject vao;
     vao.AddIndexBuffer(ib);
-    vao.SetVertexAttribPointer(vb, 0, 3, GL_FLOAT, false, 9 * sizeof(float), nullptr);
-    vao.SetVertexAttribPointer(vb, 1, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) (7 * sizeof(float)));
+    vao.SetVertexAttribPointer(vb, 0, 3, GL_FLOAT, false, 5 * sizeof(float), nullptr);
+    vao.SetVertexAttribPointer(vb, 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) (3 * sizeof(float)));
     vao.EnableVertexAttribPointer(0);
     vao.EnableVertexAttribPointer(1);
 
@@ -75,22 +130,32 @@ int main()
     basicShader.LinkTextureSlotToUniform("tex1", 0);
     basicShader.LinkTextureSlotToUniform("tex2", 1);
 
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+    glm::mat4 projection;
+    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+    glEnable(GL_DEPTH_TEST);
+
     while(!glfwWindowShouldClose(window))
     {
         processInput(window);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        glm::mat4 trans = glm::mat4(1.0f);
-        trans = glm::translate(trans, glm::vec3(0.25f, -0.25f, 0.0f));
-        trans = glm::rotate(trans, (float)-glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-        basicShader.SetUniformMatrix4fv("transform", 1, false, glm::value_ptr(trans));
-
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         vao.Bind();
         basicShader.Bind();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3((1.0f / sqrt(2)), (1.0f / sqrt(2)), 0.0f));
+
+        basicShader.SetUniformMatrix4fv("model", 1, false, glm::value_ptr(model));
+        basicShader.SetUniformMatrix4fv("view", 1, false, glm::value_ptr(view));
+        basicShader.SetUniformMatrix4fv("projection", 1, false, glm::value_ptr(projection));
+
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
 
 
         glfwSwapBuffers(window);
