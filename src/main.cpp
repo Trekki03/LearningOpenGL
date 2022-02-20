@@ -130,13 +130,23 @@ int main()
     basicShader.LinkTextureSlotToUniform("tex1", 0);
     basicShader.LinkTextureSlotToUniform("tex2", 1);
 
-    glm::mat4 view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
     glm::mat4 projection;
     projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
     glEnable(GL_DEPTH_TEST);
+
+    glm::vec3 cubePositions[] = {
+            glm::vec3(0.0f,  0.0f,  0.0f),
+            glm::vec3(2.0f,  5.0f,  -15.0f),
+            glm::vec3(-1.5f, -2.2f, -2.5f),
+            glm::vec3(-3.8f, -2.0f, -12.3f),
+            glm::vec3(2.4f,  -0.4f, -3.5f),
+            glm::vec3(-1.7f, 3.0f,  -7.5f),
+            glm::vec3(1.3f,  -2.0f, -2.5f),
+            glm::vec3(1.5f,  2.0f,  -2.5f),
+            glm::vec3(1.5f,  0.2f,  -1.5f),
+            glm::vec3(-1.3f, 1.0f,  -1.5f)
+    };
 
     while(!glfwWindowShouldClose(window))
     {
@@ -146,18 +156,23 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         vao.Bind();
-        basicShader.Bind();
-
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3((1.0f / sqrt(2)), (1.0f / sqrt(2)), 0.0f));
-
-        basicShader.SetUniformMatrix4fv("model", 1, false, glm::value_ptr(model));
-        basicShader.SetUniformMatrix4fv("view", 1, false, glm::value_ptr(view));
         basicShader.SetUniformMatrix4fv("projection", 1, false, glm::value_ptr(projection));
 
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+        for(unsigned int i = 0; i < 10; i++)
+        {
+            float angle = 20.0f * (float)i + (float)glfwGetTime() * 20.0f;
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            basicShader.SetUniformMatrix4fv("model", 1, false, glm::value_ptr(model));
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
 
+            glm::mat4 view = glm::mat4(1.0f);
+            view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f*sin((float)glfwGetTime())-4.0f));
+            basicShader.SetUniformMatrix4fv("view", 1, false, glm::value_ptr(view));
+        }
 
+        basicShader.Bind();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
