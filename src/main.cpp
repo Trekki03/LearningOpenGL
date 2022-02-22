@@ -11,14 +11,20 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 cameraPos;
+glm::vec3 direction;
+glm::vec3 cameraUp;
+
+float pitch = 90.0f;
+float yaw = 0.0f;
+float fov = 45.0f;
 
 float deltaTime = 0.0f, lastFrame = 0.0f;
 
 int main()
 {
+    cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
+    cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
     glfwInit();
     //Set OpenGL Context to Version 3.3 core
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -38,7 +44,9 @@ int main()
     }
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwMakeContextCurrent(window);
-
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
     if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -136,14 +144,11 @@ int main()
     basicShader.LinkTextureSlotToUniform("tex1", 0);
     basicShader.LinkTextureSlotToUniform("tex2", 1);
 
-    glm::mat4 projection;
-    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-
     glEnable(GL_DEPTH_TEST);
 
     while(!glfwWindowShouldClose(window))
     {
-        float currentFrame = glfwGetTime();
+        float currentFrame = (float)glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
@@ -154,7 +159,15 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         vao.Bind();
+
+        glm::mat4 projection;
+        projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
         basicShader.SetUniformMatrix4fv("projection", 1, false, glm::value_ptr(projection));
+
+        glm::mat4 view;
+        view = glm::lookAt(cameraPos, cameraPos + direction, cameraUp);
+        basicShader.SetUniformMatrix4fv("view", 1, false, glm::value_ptr(view));
+
 
         for(unsigned int x = 0; x < 10; x++)
         {
@@ -165,13 +178,6 @@ int main()
                 basicShader.SetUniformMatrix4fv("model", 1, false, glm::value_ptr(model));
                 glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
             }
-
-            const float radius = 15.0f;
-            float camX = sin(glfwGetTime()* 0.5f) * radius ;
-            float camZ = cos(glfwGetTime()* 0.5f) * radius ;
-            glm::mat4 view;
-            view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-            basicShader.SetUniformMatrix4fv("view", 1, false, glm::value_ptr(view));
         }
 
         basicShader.Bind();
