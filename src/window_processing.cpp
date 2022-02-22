@@ -1,5 +1,6 @@
 #include "window_processing.h"
 #include "glm/glm.hpp"
+#include <iostream>
 
 bool wireMode = false;
 bool lastKeyState_V = false;
@@ -117,7 +118,7 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos)
 
 void scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
 {
-    fov -= (float)xOffset;
+    fov -= (float)yOffset;
     if(fov < 1.0f)
     {
         fov = 1.0f;
