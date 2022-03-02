@@ -4,14 +4,14 @@ Camera::Camera(glm::vec3 position, float pitch, float yaw, float fov):
         m_pitch(pitch), m_yaw(yaw), m_fov(fov), m_xPos(position.x), m_yPos(position.y), m_zPos(position.z)
 { m_cameraID = (unsigned long long int) this; }
 
-inline void Camera::AddFov(float fov)
+void Camera::AddFov(float fov)
 {
     m_fov += fov;
     if(fov < 1.0f) { fov = 1.0f; }
     else if (fov > 45.0f) { fov = 45.0f; }
 }
 
-inline void Camera::AddPitch(float pitch)
+void Camera::AddPitch(float pitch)
 {
     m_pitch += pitch;
 
@@ -19,10 +19,10 @@ inline void Camera::AddPitch(float pitch)
     else if (pitch < -89.0f) { pitch = -89.0f; }
 }
 
-inline void Camera::AddYaw(float yaw)
+void Camera::AddYaw(float yaw)
 { m_yaw += yaw; }
 
-inline void Camera::SetFov(float fov)
+void Camera::SetFov(float fov)
 {
     m_fov = fov;
 
@@ -36,23 +36,23 @@ inline void Camera::SetFov(float fov)
     }
 }
 
-inline void Camera::AddXPos(float xPos)
+void Camera::AddXPos(float xPos)
 { m_xPos += xPos; }
 
-inline void Camera::AddYPos(float yPos)
+void Camera::AddYPos(float yPos)
 { m_yPos += yPos; }
 
-inline void Camera::AddZPos(float zPos)
+void Camera::AddZPos(float zPos)
 { m_zPos += zPos; }
 
-inline void Camera::AddPositionVector(glm::vec3 position)
+void Camera::AddPositionVector(glm::vec3 position)
 {
     m_xPos += position.x;
     m_yPos += position.y;
     m_zPos += position.z;
 }
 
-inline void Camera::SetPitch(float pitch)
+void Camera::SetPitch(float pitch)
 {
     m_pitch = pitch;
 
@@ -66,38 +66,38 @@ inline void Camera::SetPitch(float pitch)
     }
 }
 
-inline void Camera::SetYaw(float yaw)
+void Camera::SetYaw(float yaw)
 { m_yaw = yaw; }
 
-inline void Camera::SetXPos(float xPos)
+void Camera::SetXPos(float xPos)
 { m_xPos = xPos; }
 
-inline void Camera::SetYPos(float yPos)
+void Camera::SetYPos(float yPos)
 { m_yPos = yPos; }
 
-inline void Camera::SetZPos(float zPos)
+void Camera::SetZPos(float zPos)
 { m_zPos = zPos; }
 
-inline void Camera::SetPositionVector(glm::vec3 position)
+void Camera::SetPositionVector(glm::vec3 position)
 {
     m_xPos = position.x;
     m_yPos = position.y;
     m_zPos = position.z;
 }
 
-inline unsigned long long int Camera::GetId() const
+unsigned long long int Camera::GetId() const
 { return m_cameraID;}
 
-inline float Camera::GetFov() const
+float Camera::GetFov() const
 { return m_fov; }
 
-inline float Camera::GetYaw() const
+float Camera::GetYaw() const
 { return m_yaw; }
 
-inline float Camera::GetPitch() const
+float Camera::GetPitch() const
 { return  m_pitch; }
 
-inline glm::vec3 Camera::GetDirectionVector() const
+glm::vec3 Camera::GetDirectionVector() const
 {
     glm::vec3 direction;
     direction.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
@@ -106,5 +106,5 @@ inline glm::vec3 Camera::GetDirectionVector() const
     return glm::normalize(direction);
 }
 
-inline glm::vec3 Camera::GetPositionVector() const
+glm::vec3 Camera::GetPositionVector() const
 { return {m_xPos, m_yPos, m_zPos}; }
