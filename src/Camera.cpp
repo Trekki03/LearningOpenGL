@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Camera.h"
 
 Camera::Camera(glm::vec3 position, float pitch, float yaw, float fov):
@@ -6,17 +7,30 @@ Camera::Camera(glm::vec3 position, float pitch, float yaw, float fov):
 
 void Camera::AddFov(float fov)
 {
-    m_fov += fov;
-    if(fov < 1.0f) { fov = 1.0f; }
-    else if (fov > 45.0f) { fov = 45.0f; }
+    float newFov = m_fov + fov;
+    if(newFov < 1.0f)
+    {
+        newFov = 1.0f;
+    }
+    else if (newFov > 45.0f)
+    {
+        newFov = 45.0f;
+    }
+    m_fov = newFov;
 }
 
 void Camera::AddPitch(float pitch)
 {
-    m_pitch += pitch;
-
-    if(pitch > 89.0f) { pitch = 89.0f; }
-    else if (pitch < -89.0f) { pitch = -89.0f; }
+    float newPitch = m_pitch + pitch;
+    if(newPitch > 89.0f)
+    {
+        newPitch = 89.0f;
+    }
+    else if (newPitch < -89.0f)
+    {
+        newPitch = -89.0f;
+    }
+    m_pitch = newPitch;
 }
 
 void Camera::AddYaw(float yaw)
@@ -24,16 +38,16 @@ void Camera::AddYaw(float yaw)
 
 void Camera::SetFov(float fov)
 {
-    m_fov = fov;
-
-    if(fov < 1.0f)
+    float newFov = fov;
+    if(newFov < 1.0f)
     {
-        fov = 1.0f;
+        newFov = 1.0f;
     }
-    else if (fov > 45.0f)
+    else if (newFov > 45.0f)
     {
-        fov = 45.0f;
+        newFov = 45.0f;
     }
+    m_fov = newFov;
 }
 
 void Camera::AddXPos(float xPos)
@@ -54,16 +68,16 @@ void Camera::AddPositionVector(glm::vec3 position)
 
 void Camera::SetPitch(float pitch)
 {
-    m_pitch = pitch;
-
-    if(pitch > 89.0f)
+    float newPitch = pitch;
+    if(newPitch > 89.0f)
     {
-        pitch = 89.0f;
+        newPitch = 89.0f;
     }
-    else if (pitch < -89.0f)
+    else if (newPitch < -89.0f)
     {
-        pitch = -89.0f;
+        newPitch = -89.0f;
     }
+    m_pitch = newPitch;
 }
 
 void Camera::SetYaw(float yaw)
