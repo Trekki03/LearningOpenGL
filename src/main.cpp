@@ -10,21 +10,17 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "CameraController.h"
 
-glm::vec3 cameraPos;
-glm::vec3 direction;
-glm::vec3 cameraUp;
-
-float pitch = 90.0f;
-float yaw = 0.0f;
-float fov = 45.0f;
-
+CameraController camController;
 float deltaTime = 0.0f, lastFrame = 0.0f;
 
 int main()
 {
-    cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
-    cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
+    camController = CameraController();
+    auto cam1 = camController.CreateCamera( {0.0f, 0.0f, 3.0f}, 0.0f, 0.0f, 45.0f);
+    camController.SetActiveCamera(cam1);
+
     glfwInit();
     //Set OpenGL Context to Version 3.3 core
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -32,6 +28,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 #ifdef __APPLE__
+    #define GL_SILENCE_DEPRECATION
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);    //Needed by MacOS
 #endif
 
@@ -161,11 +158,11 @@ int main()
         vao.Bind();
 
         glm::mat4 projection;
-        projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(camController.GetActiveCameraPointer()->GetFov()), 800.0f / 600.0f, 0.1f, 100.0f);
         basicShader.SetUniformMatrix4fv("projection", 1, false, glm::value_ptr(projection));
 
         glm::mat4 view;
-        view = glm::lookAt(cameraPos, cameraPos + direction, cameraUp);
+        view = glm::lookAt(camController.GetActiveCameraPointer()->GetPositionVector(), camController.GetActiveCameraPointer()->GetPositionVector() + camController.GetActiveCameraPointer()->GetDirectionVector(), glm::vec3(0.0f, 1.0f, 0.0f));
         basicShader.SetUniformMatrix4fv("view", 1, false, glm::value_ptr(view));
 
 

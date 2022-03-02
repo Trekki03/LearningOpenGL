@@ -1,21 +1,13 @@
 #include "window_processing.h"
 #include "glm/glm.hpp"
-#include <iostream>
+#include "CameraController.h"
 
 bool wireMode = false;
 bool lastKeyState_V = false;
-
-extern glm::vec3 cameraPos;
-extern glm::vec3 direction;
-extern glm::vec3 cameraUp;
+bool firstMouse = true;
 
 extern float deltaTime;
-
-extern float pitch;
-extern float yaw;
-extern float fov;
-
-bool firstMouse = true;
+extern CameraController camController;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -48,34 +40,35 @@ void processInput(GLFWwindow* window)
         }
 
     }
-    else if( (glfwGetKey(window, GLFW_KEY_W) == GLFW_RELEASE) && lastKeyState_V)
+    else if( (glfwGetKey(window, GLFW_KEY_V) == GLFW_RELEASE) && lastKeyState_V)
     {
         lastKeyState_V = false;
     }
 
-
-
-
-    const float cameraSpeed = 2.5 * deltaTime;
+    const float cameraSpeed = 2.5f * deltaTime;
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
-        cameraPos += cameraSpeed * direction;
+        camController.GetActiveCameraPointer()->AddPositionVector(cameraSpeed * camController.GetActiveCameraPointer()->GetDirectionVector());
     }
 
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
-        cameraPos -= cameraSpeed * direction;
+        camController.GetActiveCameraPointer()->AddPositionVector(-(cameraSpeed * camController.GetActiveCameraPointer()->GetDirectionVector()));
     }
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
-        cameraPos -= glm::normalize(glm::cross(direction, cameraUp)) * cameraSpeed;
+        camController.GetActiveCameraPointer()->AddPositionVector( - (glm::normalize(
+                glm::cross(camController.GetActiveCameraPointer()->GetDirectionVector(),glm::vec3(0.0f, 1.0f, 0.0f)))
+                * cameraSpeed));
     }
 
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
-        cameraPos += glm::normalize(glm::cross(direction, cameraUp)) * cameraSpeed;
+        camController.GetActiveCameraPointer()->AddPositionVector ( glm::normalize(
+                glm::cross(camController.GetActiveCameraPointer()->GetDirectionVector(), glm::vec3(0.0f, 1.0f, 0.0f)))
+                * cameraSpeed);
     }
 }
 
@@ -98,33 +91,12 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos)
     xOffset *= sensitivity;
     yOffset *= sensitivity;
 
-    yaw += xOffset;
-    pitch += yOffset;
+    camController.GetActiveCameraPointer()->AddYaw(xOffset);
+    camController.GetActiveCameraPointer()->AddPitch(yOffset);
 
-    if(pitch > 89.0f)
-    {
-        pitch = 89.0f;
-    }
-    else if (pitch < -89.0f)
-    {
-        pitch = -89.0f;
-    }
-
-    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = sin(glm::radians(pitch));
-    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction = glm::normalize(direction);
 }
 
 void scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
 {
-    fov -= (float)yOffset;
-    if(fov < 1.0f)
-    {
-        fov = 1.0f;
-    }
-    else if (fov > 45.0f)
-    {
-        fov = 45.0f;
-    }
+    camController.GetActiveCameraPointer()->AddFov((float)yOffset);
 }

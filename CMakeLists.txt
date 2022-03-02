@@ -11,7 +11,20 @@ add_executable(
         src/VertexBuffer.cpp
         src/VertexBuffer.h
         src/IndexBuffer.cpp
-        src/IndexBuffer.h src/VertexArrayObject.cpp src/VertexArrayObject.h src/window_processing.cpp src/window_processing.h src/ShaderProgram.cpp src/ShaderProgram.h src/Texture2D.cpp src/Texture2D.h)
+        src/IndexBuffer.h
+        src/VertexArrayObject.cpp
+        src/VertexArrayObject.h
+        src/window_processing.cpp
+        src/window_processing.h
+        src/ShaderProgram.cpp
+        src/ShaderProgram.h
+        src/Texture2D.cpp
+        src/Texture2D.h
+        src/Camera.cpp
+        src/Camera.h
+        src/CameraController.cpp
+        src/CameraController.h
+        )
 
 
 #add custom target for copying resource files to binary folder
